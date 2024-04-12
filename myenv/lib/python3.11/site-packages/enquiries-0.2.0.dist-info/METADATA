@@ -1,0 +1,147 @@
+Metadata-Version: 2.1
+Name: enquiries
+Version: 0.2.0
+Summary: Ask simple questions - get simple answers
+License: MPL-2.0
+Keywords: cli,prompt,input
+Author: Peter Holloway
+Author-email: holloway.p.r@gmail.com
+Requires-Python: >=3.7,<4.0
+Classifier: License :: OSI Approved
+Classifier: License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Requires-Dist: click (>=7.1.2,<8.0.0)
+Requires-Dist: curtsies (>=0.3.4,<0.4.0)
+Description-Content-Type: text/x-rst
+
+Enquiries
+=========
+
+``enquiries`` aims to provide a straightforward way to get decisions from your users.
+It can offer multiple choice, yes/no or free text
+
+.. code-block:: python
+
+    import enquiries
+
+    options = ['thing 1', 'thing 2', 'thing 3']
+    choice = enquiries.choose('Choose one of these options: ', options)
+
+    if enquiries.confirm('Do you want to write something?'):
+        text = enquiries.freetext('Write something interesting: ')
+        print(text)
+
+Input for these questions is fully interactive and prevents any incorrect
+responses. No more loops checking if the answer matches the question. No more
+mapping the text entered to original objects. Let users choose the objects
+directly.
+
+.. image:: https://asciinema.org/a/6OyuQH9H03vSP2gf79f0KwaCO.png
+   :target: https://asciinema.org/a/6OyuQH9H03vSP2gf79f0KwaCO
+   :width: 80%
+
+Multiple choice
+---------------
+All choices consist of letting users pick one of several items. For ``enquiries`` these
+can be in any iterable.
+
+Users can pick one or many of the options offered to them.
+
+Single Selection
+~~~~~~~~~~~~~~~~
+
+For single choice, use the ``choose`` method with the list of choices.
+
+.. code-block:: python
+
+    >>> options = ['Thing 1', 'Thing 2']
+    >>> response = enquiries.choose('Pick a thing', options)
+    # interactive prompt
+    >>> print('You chose "{}"'.format(response))
+    You chose "Thing 1"
+    >>>
+
+The interactive prompt here appears as list of options you can scroll through
+and select using the return key::
+
+    Pick a thing
+    > Thing 1
+      Thing 2
+      Thing 3
+
+Where up/down arrow keys will scroll through the options moving the ``>``
+marker. The currently selected option is also in bold typeface (if the terminal
+supports it).
+
+Multiple Selections
+~~~~~~~~~~~~~~~~~~~
+For cases where the user can choose multiple options, the ``multi`` keyword can
+be used.
+
+.. code-block:: python
+
+    >>> options = ['Thing 1', 'Thing 2', 'Thing 3']
+    >>> response = enquiries.choose('Pick some things', options, multi=True)
+    # interactive prompt
+    >>> print('You chose "{}"'.format(response))
+    You chose "['Thing1', 'Thing 3']"
+    >>>
+
+The interactive prompt for multiple choice is similar to that used for single
+choice but the `>` marker is replaces with ◉ and ◌ to signify chosen or not
+chosen. As before, the arrow keys change the selection and the current line is
+bold. The space key is used to mark an option as selected.::
+
+    pick a thing
+    ◉ Thing 1
+    ◌ Thing 2
+    ◌ Thing 3
+
+Yes/No Confirmation
+-------------------
+
+Used to get a simple boolean response from users.
+
+.. code-block:: python
+
+    >>> if enquiries.confirm('Do you really want to do the thing')
+    ...     print('Carrying on')
+    ... else:
+    ...     print('Exiting')
+    ...
+    # interactive prompt
+    Carrying on
+    >>>
+
+Results in the prompt below::
+
+    Do you really want to do the thing? [y/N]
+
+The prompt for confirmation by default accepts ``y``/``n`` keys to choose and
+return to accept the choice. Return without choosing accepts the default value
+(usually ``False``). The keys used and the default can be changed as required.
+By default, the user should choose y/n then hit return but ``single_key`` mode
+can be used to remove the need to hit return.
+
+
+Freetext
+--------
+``enquiries`` free text offering is offers a slightly enhanced version of the
+`input <https://docs.python.org/3/library/functions.html>`_ builtin function. It adds multi line support as well as basic
+readline like controls (``Ctrl-a``, ``Ctrl-w`` etc). The text entry area is also cleared after the text is
+accepted keeping terminal history clean.
+
+.. code-block:: python
+
+    >>> text = enquiries.freetext('Write some stuff')
+    >>> print(text)
+    This is the text you entered
+    on many lines
+    >>>
+
+New lines in text can be entered using ``Alt``-``Return``.
+
